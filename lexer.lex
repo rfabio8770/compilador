@@ -13,10 +13,12 @@ char* create_string(char *value, int length) {
 
 %%
 "func"  { return FUNC; }
+"print" {return PRINT; }
 "("     { return LPAR; }
 ")"     { return RPAR; }
 "{"     { return LCURLY; }
 "}"     { return RCURLY; }
+";"     { return SEMICOLON; }
 [0-9]+  { yylval.op_value = create_string(yytext, yyleng); return NUMERIC; }
 [a-z]+  { yylval.op_value = create_string(yytext, yyleng); return IDENT; }
 [ \t\n] {}
