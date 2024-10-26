@@ -3,6 +3,12 @@
 #include <stdio.h>
 #include "parser.tab.h"
 
+char* create_string(char *value, int length) {
+    char *return_value = new char[length + 1];
+    strcpy(return_value, value);
+    return return_value;
+}
+
 %}
 
 %%
@@ -11,8 +17,8 @@
 ")"     { return RPAR; }
 "{"     { return LCURLY; }
 "}"     { return RCURLY; }
-[0-9]+  { return NUMERIC; }
-[a-z]+  { return IDENT; }
+[0-9]+  { yylval.op_value = create_string(yytext, yyleng); return NUMERIC; }
+[a-z]+  { yylval.op_value = create_string(yytext, yyleng); return IDENT; }
 [ \t\n] {}
 
 %%
