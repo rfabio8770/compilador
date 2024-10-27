@@ -1,0 +1,9 @@
+func main()
+{
+    print(a);
+    print(b);
+}
+
+func add() {
+    print(10);
+}

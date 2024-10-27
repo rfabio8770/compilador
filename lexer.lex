@@ -19,7 +19,7 @@ char* create_string(char *value, int length) {
 "{"     { return LCURLY; }
 "}"     { return RCURLY; }
 ";"     { return SEMICOLON; }
-[0-9]+  { yylval.op_value = create_string(yytext, yyleng); return NUMERIC; }
+[0-9]+  { yylval.op_value = create_string(yytext, yyleng); return NUMBER; }
 [a-z]+  { yylval.op_value = create_string(yytext, yyleng); return IDENT; }
 [ \t\n] {}
 

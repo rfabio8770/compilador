@@ -1,38 +1,67 @@
 %{
 #include <stdio.h>
+#include <iostream>
+
 int yylex();
 void yyerror(const char * s);
+
+struct CodeNode {
+    std::string code;
+    std::string name;
+};
+
 %}
 %union {
     char *op_value;
+    struct CodeNode *codenode;
 }
 
 %token FUNC
 %token PRINT
 %token SEMICOLON
 %token <op_value> IDENT
-%token <op_value> NUMERIC
+%token <op_value> NUMBER
 %token LPAR
 %token RPAR
 %token LCURLY
 %token RCURLY
 %start program
 
+%type <codenode> functions
+%type <codenode> function 
+
 %%
-program:    functions   { printf("program -> functions\n"); }
+program:    functions   {  
+    struct CodeNode *node = $1;
+    printf("%s\n", node->code.c_str());
+}
 
-functions:  function functions { printf("functions -> function functions\n");}
-            | %empty { printf("functions -> empty\n");}       
+functions:  function functions { 
+    struct CodeNode *function = $1;
+    struct CodeNode *functions $2;
+    struct CodeNode *node= new CodeNode;
+    node->code = function->code + functions->code;
+    $$ = node;
+    
+}
+            | %empty {
+                struct CodeNode *node = new CodeNode;
+                    $$ = node;
+            }       
 
-function:   FUNC IDENT LPAR RPAR LCURLY statements RCURLY { printf("program -> FUNC IDENT %s LPAR RPAR LCURLY statements RCURLY\n",$2);}
+function:   FUNC IDENT LPAR RPAR LCURLY statements RCURLY { 
+struct CodeNode *node = new CodeNode;
+node->code += std::string("func ") + $2 + std::string("\n");
+node->code += std::string("endfunc\n");
+$$ = node;
+}
+statements:    statement statements {  }
+                | %empty {  }
 
-statements:    statement statements { printf("statements -> statement statements\n"); }
-                | %empty {printf("statement -> empty\n"); }
+statement: PRINT LPAR variable RPAR SEMICOLON { }
 
-statement: PRINT LPAR variable RPAR SEMICOLON { printf("statement -> PRINT LPAR variable RPAR SEMICOLON\n");}
-
-variable:   IDENT   { printf("variable -> IDENT %s\n", $1); }
-            | NUMERIC   { printf("variable -> NUMERIC %s\n", $1); }
+variable:   IDENT   { }
+            | NUMBER   {  }
 %%
 
 int main() {
