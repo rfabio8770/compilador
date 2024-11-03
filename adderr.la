@@ -1,0 +1,11 @@
+func main(){
+	int c;
+	int a;
+	int a;
+	c = 1;	
+	a = 2;
+	c = a + c;
+	a = a + c;
+	print(a);
+	print(b);
+}
