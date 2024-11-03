@@ -12,8 +12,11 @@ char* create_string(char *value, int length) {
 %}
 
 %%
+"int"   { return INT_KEYWORD; }
 "func"  { return FUNC; }
-"print" {return PRINT; }
+"print" { return PRINT; }
+"+"	{ return PLUS; }
+"="	{ return EQUAL; }
 "("     { return LPAR; }
 ")"     { return RPAR; }
 "{"     { return LCURLY; }

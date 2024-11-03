@@ -19,6 +19,9 @@ struct CodeNode {
 %token FUNC
 %token PRINT
 %token SEMICOLON
+%token INT_KEYWORD
+%token PLUS
+%token EQUAL
 %token <op_value> IDENT
 %token <op_value> NUMBER
 %token LPAR
@@ -29,6 +32,9 @@ struct CodeNode {
 
 %type <codenode> functions
 %type <codenode> function 
+%type <codenode> statement
+%type <codenode> statements
+%type <op_value> variable
 
 %%
 program:    functions   {  
@@ -42,7 +48,6 @@ functions:  function functions {
     struct CodeNode *node= new CodeNode;
     node->code = function->code + functions->code;
     $$ = node;
-    
 }
             | %empty {
                 struct CodeNode *node = new CodeNode;
@@ -50,18 +55,51 @@ functions:  function functions {
             }       
 
 function:   FUNC IDENT LPAR RPAR LCURLY statements RCURLY { 
-struct CodeNode *node = new CodeNode;
-node->code += std::string("func ") + $2 + std::string("\n");
-node->code += std::string("endfunc\n");
-$$ = node;
+    	struct CodeNode *node = new CodeNode;
+	struct CodeNode *statements = $6;
+	node->code += std::string("func ") + $2 + std::string("\n");
+	node->code += statements->code;
+	node->code += std::string("endfunc\n");
+	$$ = node;
 }
-statements:    statement statements {  }
-                | %empty {  }
+statements:    statement statements {  
+    	struct CodeNode *statement = $1;
+    	struct CodeNode *statements =  $2;
+    	struct CodeNode *node= new CodeNode;
+    	node->code = statement->code + statements->code;
+	$$ = node;
+	}
+        | %empty {  
+                struct CodeNode *node = new CodeNode;
+                $$ = node;
+            }       
 
-statement: PRINT LPAR variable RPAR SEMICOLON { }
+statement: PRINT LPAR variable RPAR SEMICOLON {
+	
+                struct CodeNode *node = new CodeNode;
+		node->code = std::string(".> ") + std::string($3) + std::string("\n");
+                $$ = node;      
+   	 }
+	 | IDENT EQUAL variable PLUS variable SEMICOLON {
 
-variable:   IDENT   { }
-            | NUMBER   {  }
+                struct CodeNode *node = new CodeNode;
+                node->code = std::string("+ ") + std::string($1) + std::string(", ") + std::string($3) + std::string(", ") + std::string($5) + std::string("\n") ;
+		$$ = node;
+            }      
+	 | IDENT EQUAL variable SEMICOLON {
+	
+                struct CodeNode *node = new CodeNode;
+                node->code = std::string("= ") + std::string($1) + std::string(", ") + std::string($3) + std::string("\n") ;
+                $$ = node;
+            }       
+	 | INT_KEYWORD IDENT SEMICOLON {
+			struct CodeNode *node = new CodeNode;
+			node->code = std::string(". ") + $2 + std::string("\n");
+			$$ = node;
+		}
+
+variable:   IDENT   { $$ = $1; }
+            | NUMBER   { $$ = $1; }
 %%
 
 int main() {
