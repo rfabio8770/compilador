@@ -97,6 +97,8 @@ void print_symbol_table(void) {
 }
 
 %token FUNC
+%token WHILE
+%token LT
 %token PRINT
 %token SEMICOLON
 %token INT_KEYWORD
@@ -196,6 +198,25 @@ statement: PRINT LPAR variable RPAR SEMICOLON {
 			node->code = std::string(". ") + $2 + std::string("\n");
 			$$ = node;
 		}
+	| WHILE variable LT variable LCURLY statements RCURLY {
+		printf("WHILE variable\n");
+		struct CodeNode *node = new CodeNode;
+		struct CodeNode *statements = $6;
+		std::string var1 = $2;
+		std::string var2 = $4;
+		node->code += std::string(": beginloop\n");
+		//  a < 10 
+		node->code += std::string(". temp\n");
+		node->code += std::string("< temp, ") + var1 + std::string(", ") + var2 + std::string("\n");
+		node->code += std::string("?:= loopbody , temp\n");
+		node->code += std::string(":= endloop\n");
+		node->code += std::string(": loopbody\n");
+		node->code += statements->code;
+		node->code += std::string(":= beginloop\n");
+		node->code += std::string(": endloop\n");
+		$$ = node;
+
+	}
 
 variable:   IDENT   { $$ = $1; }
             | NUMBER   { $$ = $1; }

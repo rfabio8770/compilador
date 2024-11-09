@@ -12,6 +12,8 @@ char* create_string(char *value, int length) {
 %}
 
 %%
+"while" { return WHILE; }
+"<"	{ return LT; }
 "int"   { return INT_KEYWORD; }
 "func"  { return FUNC; }
 "print" { return PRINT; }
